@@ -91,12 +91,12 @@ class MakeReceivedImg:
         return gauss_channel, inv_gauss_channel
       
       
-  def Filtering(self, leds):
+  def Filtering(self, leds, sigma=None):
     """
     RandomLEDsで生成した配列にGaussChannelを施す
     """
     
-    channel, invchannel = self.GaussChannelAndInv()
+    channel, invchannel = self.GaussChannelAndInv(sigma=sigma)
     #pixel_values = np.zeros(self.numberOfLEDs)
     
     pixel_values = np.dot(channel, leds)
