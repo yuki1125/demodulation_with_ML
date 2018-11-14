@@ -50,7 +50,7 @@ class MakeReceivedImg:
     return np.array(blinking_leds)
   
   
-  def GaussChannelAndInv(self, sigma=0.3, kernelSize=5):
+  def GaussChannelAndInv(self, sigma=0.4, kernelSize=5):
         """
         Creating channel parameters based on Gauss function
         sigma: 影響度の強さ
@@ -91,12 +91,12 @@ class MakeReceivedImg:
         return gauss_channel, inv_gauss_channel
       
       
-  def Filtering(self, leds):
+  def Filtering(self, leds, sigma):
     """
     RandomLEDsで生成した配列にGaussChannelを施す
     """
     
-    channel, invchannel = self.GaussChannelAndInv()
+    channel, invchannel = self.GaussChannelAndInv(sigma)
     #pixel_values = np.zeros(self.numberOfLEDs)
     
     pixel_values = np.dot(channel, leds)

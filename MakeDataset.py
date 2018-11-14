@@ -12,7 +12,7 @@ from MakeReceivedImg import MakeReceivedImg
 class MakeDataset(object):
 
     
-    def __init__(self, loopLearn=100, loopTest=100, num_leds=16, noiseLevel=0):
+    def __init__(self, loopLearn=100, loopTest=100, num_leds=16, noiseLevel=None, sigma=None):
         
         
         self.num_leds = num_leds
@@ -20,6 +20,7 @@ class MakeDataset(object):
         self.iteration_learn = loopLearn
         self.iteration_test = loopTest
         self.noise_level = noiseLevel
+        self.sigma = sigma
        
         
     def GetPixelValue(self, maxLum=1, minLum=0):
@@ -33,7 +34,7 @@ class MakeDataset(object):
             leds = mri.RandomLEDs(max_lum_value=maxLum, min_lum_value=minLum)
             store_led_condi = np.hstack((store_led_condi, leds))
             
-            pixel = mri.Filtering(leds)
+            pixel = mri.Filtering(leds, self.sigma)
             noise = mri.GetNoise(self.noise_level)
             pixel_with_noise = pixel + noise
             store_px_value = np.hstack((store_px_value, pixel_with_noise))
