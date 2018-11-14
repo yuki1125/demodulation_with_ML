@@ -4,14 +4,17 @@ Created on Sat Nov 10 21:47:09 2018
 
 @author: Yuki
 """
+import time
+
 import numpy as np
 import pandas as pd
+ 
 
-from dtreeviz.trees import dtreeviz
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import tree
 from sklearn.metrics import accuracy_score
-
+from sklearn import preprocessing
+from sklearn.ensemble import RandomForestClassifier
 
 #from MakeReceivedImg import MakeReceivedImg
 from MakeDataset import MakeDataset
@@ -39,15 +42,30 @@ def DataFrameTest(loopTimes=None, numLEDs=None, xTarget=None, yTarget=None, nois
     
     return data_test, data_test_target
 
-df_train, df_train_target = DataFrameTrain(10000, 16, 2, 2, 0.1)
-df_test, df_test_target = DataFrameTest(1000, 16, 2, 2, 0.1)
+led_num = 16
+num_error = 0
+sqrt_len = int(np.sqrt(led_num))
 
-clf = tree.DecisionTreeClassifier(max_depth=4)  
-clf.fit(df_train, df_train_target)
+print('============== Start Training ==============')
+start = time.time()
+for y in range(sqrt_len):
+    for x in range(sqrt_len):
+        df_train, df_train_target = DataFrameTrain(1000, led_num, y, x, 0.2)
+        df_test, df_test_target = DataFrameTest(1000, led_num, y, x, 0.2)
+        
+        clf = tree.DecisionTreeClassifier(max_depth=4)  
+        clf.fit(df_train, df_train_target)
+        
+        predicted = clf.predict(df_test)
+        num_error += (sum(predicted != df_test_target))
+    
+    elapsed_time = time.time() - start
+    
+    print('Training progress.....')
+    print('現在: ', ((y + 1) * 100) / sqrt_len, '% です. (合計処理時間:', elapsed_time, '[sec])')
 
-predicted = clf.predict(df_test)
-
-print('=============== predicted ===============')
-print(predicted)
+print('Complete Training')
+#print('=============== predicted ===============')
+#print(predicted)
 print('============== correct_ans ==============')
-print(sum(predicted == df_test_target) / len(df_test))
+print('BER:', num_error / (len(df_test) * led_num))
